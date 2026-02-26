@@ -12,7 +12,22 @@ use filament\Forms;
 
 class CalendarWidget extends FullCalendarWidget // se agrega fullcalendarwidget
 {
-    public Model | string | null $model = Event::class;
+   
+    public function config(): array
+    {
+        return [
+            // 'initialView' define qué se ve al cargar
+            'initialView' => 'timeGridWeek', // O 'dayGridWeek' para horas
+            
+            // Configura el encabezado para que el usuario pueda volver a la mensual
+            'headerToolbar' => [
+                'left' => 'prev,next today',
+                'center' => 'title',
+                'right' => 'dayGridMonth,timeGridWeek,timeGridDay',
+            ],
+        ];
+    }
+
 
 
     public function fetchEvents(array $fetchInfo): array
@@ -28,30 +43,14 @@ class CalendarWidget extends FullCalendarWidget // se agrega fullcalendarwidget
                     'color' => $event->color,
                     'start' => $event->start_at,
                     'end' => $event->end_at,
-                    
+                    'url' => EventResource::getUrl(name: 'edit', parameters: ['record' => $event]), // PARA EDITAR EVENTOS
+                    'shouldOpenUrlInNewTab' => true
                 ]
             )
             ->toArray();
     }
 
-    public function getFormSchema(): array
-    {
-        return [
-            Forms\Components\TextInput::make('title')
-            ->required(),
-            Forms\Components\ColorPicker::make('color')
-            ->required(),
-            
-            Forms\Components\Grid::make()
-                ->schema([
-                    Forms\Components\DateTimePicker::make('start_at')
-                     ->required(),
-                    Forms\Components\DateTimePicker::make('end_at')
-                     ->required(),
-                ]),
-        ];
-    }
-
-
+    
+    
 
 }
